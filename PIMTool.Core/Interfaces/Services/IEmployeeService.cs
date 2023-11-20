@@ -4,7 +4,7 @@ namespace PIMTool.Core.Interfaces.Services;
 
 public interface IEmployeeService
 {
-    Task<Employee?> GetAsync(int id, CancellationToken cancellationToken = default);
+    Task<Employee?> GetAsync(int id);
     Task<IEnumerable<Employee>> GetAllAsync();
     Task Create(Employee employee);
     Task Update(Employee employee);

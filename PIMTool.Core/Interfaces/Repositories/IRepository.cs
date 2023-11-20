@@ -7,7 +7,7 @@ namespace PIMTool.Core.Interfaces.Repositories
         IQueryable<T> Get();
         Task<IEnumerable<T>> GetAll();
 
-        Task<T?> GetAsync(int id, CancellationToken cancellationToken = default);
+        Task<T?> GetAsync(int id);
 
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
 
@@ -18,6 +18,6 @@ namespace PIMTool.Core.Interfaces.Repositories
         void Update(T entity);
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
         void SaveChange();
-        Task<T?> GetUpdate(int id, CancellationToken cancellationToken = default);
+        Task<T?> GetUpdate(int id);
     }
 }

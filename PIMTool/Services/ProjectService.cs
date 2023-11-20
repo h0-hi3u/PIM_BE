@@ -13,11 +13,13 @@ namespace PIMTool.Services;
 public class ProjectService : IProjectService
 {
     private readonly IRepository<Project> _repository;
+    private readonly IRepository<Employee> _repoEmp;
     private readonly string DES = "DES";
     private readonly string ASC = "ASC";
-    public ProjectService(IRepository<Project> repository)
+    public ProjectService(IRepository<Project> repository, IRepository<Employee> repoEmp)
     {
         _repository = repository;
+        _repoEmp = repoEmp;
     }
 
     public async Task Create(Project project)
@@ -56,9 +58,9 @@ public class ProjectService : IProjectService
         return await _repository.GetAll();
     }
 
-    public async Task<Project?> GetAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Project?> GetAsync(int id)
     {
-        var entity = await _repository.GetAsync(id, cancellationToken);
+        var entity = await _repository.GetAsync(id);
         return entity;
     }
 
@@ -69,13 +71,21 @@ public class ProjectService : IProjectService
         if (existing != null)
         {
             //_repository.ClearChangeTracker();
-            
+            List<Employee> listEmployee = new List<Employee>();
+            foreach (var employee in project.Employees)
+            {
+                Employee? e = await _repoEmp.GetAsync(employee.Id);
+                if(e != null)
+                {
+                    listEmployee.Add(e);
+                }
+            }
             existing.GroupId = project.GroupId;
             existing.ProjectNumber = project.ProjectNumber;
             existing.Name = project.Name;
             existing.Customer = project.Customer;
             //existing.Employees.Clear();
-            existing.Employees = project.Employees;
+            existing.Employees = listEmployee;
             existing.Status = project.Status;
             existing.StartDate = project.StartDate;
             existing.EndDate = project.EndDate;

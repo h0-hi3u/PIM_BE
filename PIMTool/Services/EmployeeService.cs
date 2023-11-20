@@ -44,9 +44,9 @@ public class EmployeeService : IEmployeeService
         return await _repository.GetAll();
     }
 
-    public async Task<Employee?> GetAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Employee?> GetAsync(int id)
     {
-        var employee = await _repository.GetAsync(id, cancellationToken);
+        var employee = await _repository.GetAsync(id);
         if (employee != null)
         {
             return employee;

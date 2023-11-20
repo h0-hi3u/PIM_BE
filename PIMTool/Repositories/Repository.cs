@@ -25,9 +25,9 @@ namespace PIMTool.Repositories
             return await Get().ToListAsync();
         }
 
-        public async Task<T?> GetAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<T?> GetAsync(int id)
         {
-            return await Get().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return await _set.FindAsync(id);
         }
 
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
@@ -62,9 +62,9 @@ namespace PIMTool.Repositories
         {
             _pimContext.ChangeTracker.Clear();
         }
-        public async Task<T?> GetUpdate(int id, CancellationToken cancellationToken = default)
+        public async Task<T?> GetUpdate(int id)
         {
-            return await _set.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return await _set.FindAsync(id);
         }
     }
 }
