@@ -6,6 +6,7 @@ using PIMTool.Core.Interfaces.Services;
 using PIMTool.Dtos;
 using PIMTool.Dtos.Employee;
 using PIMTool.Dtos.Project;
+using PIMTool.Core.Domain.Objects;
 
 namespace PIMTool.Controllers;
 
@@ -104,7 +105,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
-    
+
     [HttpGet("checkProjectNumber")]
     public async Task<bool> CheckProjectNumber(int projectNumber)
     {
@@ -128,18 +129,21 @@ public class ProjectController : ControllerBase
     //    return _responseDto;
     //}
     [HttpGet("paging")]
-    public async Task<ResponseDto> Paging(int pageSize, int pageIndex, string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
+    public ResponseDto Paging(int pageSize, int pageIndex, string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
     {
         try
         {
-            var list = await _projectService.SearchProject(searchText, searchStatus, sortNumber, sortName, sortStatus, sortCustomer, sortStartDate);
-            decimal count = (decimal)list.Count() / pageSize;
+            //var list = await _projectService.SearchProject(searchText, searchStatus, sortNumber, sortName, sortStatus, sortCustomer, sortStartDate);
+            //var result = _projectService.PagingProject(pageSize, pageIndex, list);
+            PagingDto result = _projectService.SearchProjectV2(pageSize, pageIndex, searchText, searchStatus, sortNumber, sortName, sortStatus, sortCustomer, sortStartDate);
+
+            var totalRecord = result.TotalRecord;
+            decimal count = (decimal)totalRecord / pageSize;
             decimal totalPage = Math.Ceiling(count);
-            var result = _projectService.PagingProject(pageSize, pageIndex, list);
             _responseDto.Data = new
             {
                 totalPage = totalPage,
-                result = result
+                result = result.Data
             };
         }
         catch (Exception ex)
@@ -156,11 +160,27 @@ public class ProjectController : ControllerBase
         {
             await _projectService.RemoveRangeById(projects);
             _responseDto.Data = "Remove success!";
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             _responseDto.isSuccess = false;
             _responseDto.Error = ex.Message;
         }
         return _responseDto;
+    }
+    [HttpGet("addMuch")]
+    public async Task<ActionResult> AddRange()
+    {
+        try
+        {
+
+            await _projectService.Add1000();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
     }
 }

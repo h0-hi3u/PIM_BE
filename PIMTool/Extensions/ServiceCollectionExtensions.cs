@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Interfaces.Repositories;
 using PIMTool.Core.Interfaces.Services;
 using PIMTool.Repositories;

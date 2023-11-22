@@ -13,7 +13,8 @@ namespace PIMTool.MappingProfiles
             // project
             CreateMap<Project, ProjectDto>().ReverseMap();
             CreateMap<Project, ProjectCreateDto>().ReverseMap();
-            CreateMap<Project, ProjectUpdateDto>().ReverseMap();
+            CreateMap<Project, ProjectUpdateDto>().AfterMap((project, projectUpdate) => project.EndDate = projectUpdate.EndDate);
+            CreateMap<ProjectUpdateDto, Project>().AfterMap((projectUpdate, project) => projectUpdate.EndDate = project.EndDate);
 
             // employee
             CreateMap<Employee, EmployeeDto>().ReverseMap();

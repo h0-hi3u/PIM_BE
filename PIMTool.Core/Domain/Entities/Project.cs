@@ -12,7 +12,7 @@ public class Project : IEntity
     [Required]
     public int GroupId { get; set; }
 
-    [Required, Range(0, 999)]
+   // [Required, Range(0, 999)]
     public int ProjectNumber { get; set; }
 
     [Required, MaxLength(50)]
