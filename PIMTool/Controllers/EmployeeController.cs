@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PIMTool.Core.Domain.Entities;
@@ -9,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PIMTool.Controllers;
 
+[Authorize(Roles = "admin")]
 [Route("employee")]
 [ApiController]
 public class EmployeeController : ControllerBase

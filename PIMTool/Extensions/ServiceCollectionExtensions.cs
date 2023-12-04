@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PIMTool.Core.Domain.Entities;
 using PIMTool.Core.Interfaces.Repositories;
@@ -19,23 +20,29 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IGroupSevice, GroupService>();
         services.AddScoped<IProjectEmployeesService, ProjectEmployeesService>();
     }
-    public static void ConfigureServices(this IServiceCollection services)
+    public static void ConfigurationService(this IServiceCollection services)
     {
-        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+        var configuration = services.BuildServiceProvider().GetService<IConfiguration>()!;
+        //services.AddDbContext<TestJwtContext>(options =>
+        //{
+        //    options.UseSqlServer(configuration.GetConnectionString("SolidEcommerceDbConn"), sqlOptions => sqlOptions.CommandTimeout(60));
+        //});
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = configuration["Jwt:Issuer"],
-        ValidAudience = configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:ValidIssuer"],
+            ValidAudience = configuration["Jwt:ValidAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"])),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
         services.AddMvc();
     }
 }

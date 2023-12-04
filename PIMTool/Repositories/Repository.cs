@@ -55,7 +55,7 @@ namespace PIMTool.Repositories
         }
         public void Update(T entity)
         {
-            _pimContext.Entry<T>(entity).State = EntityState.Modified;
+            _set.Update(entity);
             //_pimContext.Update(entity);
         }
         public void ClearChangeTracker()

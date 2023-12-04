@@ -7,9 +7,10 @@ using PIMTool.Dtos;
 using PIMTool.Dtos.Employee;
 using PIMTool.Dtos.Project;
 using PIMTool.Core.Domain.Objects;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PIMTool.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("projects")]
 public class ProjectController : ControllerBase
@@ -26,7 +27,7 @@ public class ProjectController : ControllerBase
         _responseDto = new ResponseDto();
         _projectEmployeesService = projectEmployeesService;
     }
-
+    [Authorize(Roles = "admin")]
     [HttpGet("{id}")]
     public ResponseDto Get([FromRoute][Required] int id)
     {
@@ -42,7 +43,6 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
-
     [HttpGet]
     public async Task<ResponseDto> GetAll()
     {
@@ -58,6 +58,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
+    [Authorize(Roles = "admin")]
     [HttpPost]
     public async Task<ResponseDto> Create(ProjectCreateDto projectCreateDto)
     {
@@ -74,6 +75,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
+    [Authorize(Roles = "admin")]
     [HttpPut]
     public async Task<ResponseDto> Update(ProjectUpdateDto projectUpdateDto)
     {
@@ -90,6 +92,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
+    [Authorize(Roles = "admin")]
     [HttpDelete("{id}")]
     public async Task<ResponseDto> Delete([FromRoute][Required] int id)
     {
@@ -105,7 +108,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
-
+    [Authorize(Roles = "admin")]
     [HttpGet("checkProjectNumber")]
     public async Task<bool> CheckProjectNumber(int projectNumber)
     {
@@ -153,6 +156,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
+    [Authorize(Roles = "admin")]
     [HttpPost("removeRange")]
     public async Task<ResponseDto> RemoveRange(List<int> projects)
     {
@@ -168,6 +172,7 @@ public class ProjectController : ControllerBase
         }
         return _responseDto;
     }
+
     [HttpGet("addMuch")]
     public async Task<ActionResult> AddRange()
     {

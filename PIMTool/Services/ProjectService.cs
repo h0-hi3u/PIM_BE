@@ -128,8 +128,9 @@ public class ProjectService : IProjectService
 
     public async Task<IEnumerable<Project>> SearchProject(string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
     {
-        List<Project> listProject = (List<Project>)await _repository.GetAll();
-        IEnumerable<Project> result;
+        List<Project> listProject1 = (List<Project>)await _repository.GetAll();
+        var listProject = listProject1.AsQueryable();
+        IQueryable<Project> result;
         // Search
         if (string.IsNullOrEmpty(searchText) && searchStatus.Equals("0"))
         {
@@ -294,37 +295,37 @@ public class ProjectService : IProjectService
         else if (searchStatus.Equals("0"))
         {
             //queryString = $"Name LIKE '%{searchText}%' or Customer LIKE '%{searchText}%'";
-            queryString = $"Name.Contains(\"{searchText}\") || Customer.Contains(\"{searchText}\")";
+            queryString = $"Name.Contains(\"{searchText}\") || Customer.Contains(\"{searchText}\") || (ProjectNumber.ToString().Contains(\"{searchText}\"))";
         }
         else
         {
-            queryString = $"(Name.Contains(\"{searchText}\") || Customer.Contains(\"{searchText}\")) && Status.Equals(\"{searchStatus}\")";
+            queryString = $"((Name.Contains(\"{searchText}\") || Customer.Contains(\"{searchText}\"))  || (ProjectNumber.ToString().Contains(\"{searchText}\"))) && Status.Equals(\"{searchStatus}\")";
         }
         // Execute query
         if (queryString != null && sortOption != null)
         {
-            var temp = _repository.Get().AsQueryable().Where(queryString).OrderBy(sortOption);
+            var temp = _repository.Get().Where(queryString).OrderBy(sortOption);
             result.TotalRecord = temp.Count();
             result.Data = temp.Skip(skip).Take(pageSize);
             // return _repository.Get().AsQueryable().Where(queryString).OrderBy(sortOption).Skip(skip).Take(pageSize);
         }
         else if (queryString != null)
         {
-            var temp = _repository.Get().AsQueryable().Where(queryString);
+            var temp = _repository.Get().Where(queryString);
             result.TotalRecord = temp.Count();
             result.Data = temp.Skip(skip).Take(pageSize);
             //return _repository.Get().AsQueryable().Where(queryString).Skip(skip).Take(pageSize);
         }
         else if (sortOption != null)
         {
-            var temp = _repository.Get().AsQueryable().OrderBy(sortOption);
+            var temp = _repository.Get().OrderBy(sortOption);
             result.TotalRecord = temp.Count();
             result.Data = temp.Skip(skip).Take(pageSize);
             //return _repository.Get().AsQueryable().OrderBy(sortOption).Skip(skip).Take(pageSize);
         }
         else
         {
-            var temp = _repository.Get().AsQueryable();
+            var temp = _repository.Get();
             result.TotalRecord = temp.Count();
             result.Data = temp.Skip(skip).Take(pageSize);
             //return _repository.Get().AsQueryable().Skip(skip).Take(pageSize);

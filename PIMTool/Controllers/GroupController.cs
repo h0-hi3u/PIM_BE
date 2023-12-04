@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PIMTool.Core.Domain.Entities;
@@ -8,6 +9,7 @@ using PIMTool.Dtos.Group;
 
 namespace PIMTool.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("group")]
     [ApiController]
     public class GroupController : ControllerBase
