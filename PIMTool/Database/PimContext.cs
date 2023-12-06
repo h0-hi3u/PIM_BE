@@ -12,7 +12,6 @@ public class PimContext : DbContext
     public DbSet<Employee> Employees { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;
 
- 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

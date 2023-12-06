@@ -30,7 +30,7 @@ public class Project : IEntity
     public DateTime? EndDate { get; set; }
 
     [Timestamp]
-    public byte[] Version { get; set; }
+    public byte[]? Version { get; set; }
 
     [ForeignKey("GroupId")]
     public Group Group { get; set; }

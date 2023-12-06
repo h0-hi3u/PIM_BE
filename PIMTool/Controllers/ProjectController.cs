@@ -48,7 +48,7 @@ public class ProjectController : ControllerBase
     {
         try
         {
-            IEnumerable<Project> list = await _projectService.GetAll();
+            IEnumerable<Project> list = await _projectService.GetAllAsync();
             _responseDto.Data = _mapper.Map<IEnumerable<ProjectDto>>(list);
         }
         catch (Exception ex)
@@ -173,19 +173,19 @@ public class ProjectController : ControllerBase
         return _responseDto;
     }
 
-    [HttpGet("addMuch")]
-    public async Task<ActionResult> AddRange()
-    {
-        try
-        {
+    //[HttpGet("addMuch")]
+    //public async Task<ActionResult> AddRange()
+    //{
+    //    try
+    //    {
 
-            await _projectService.Add1000();
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+    //        await _projectService.Add1000();
+    //        return Ok();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return BadRequest(ex.Message);
+    //    }
 
-    }
+    //}
 }

@@ -75,7 +75,7 @@ public class ProjectService : IProjectService
         }
     }
 
-    public async Task<IEnumerable<Project>> GetAll()
+    public async Task<IEnumerable<Project>> GetAllAsync()
     {
         return await _repository.GetAll();
     }
@@ -91,6 +91,10 @@ public class ProjectService : IProjectService
         var existing = _repository.Get().Include(x => x.Employees).Where(x => x.Id == project.Id).FirstOrDefault();
         if (existing != null)
         {
+            if (!existing.Version.SequenceEqual(project.Version))
+            {
+                throw new Exception("409");
+            }
             //_repository.ClearChangeTracker();
             List<Employee> listEmployee = new List<Employee>();
             foreach (var employee in project.Employees)
@@ -110,15 +114,9 @@ public class ProjectService : IProjectService
             existing.Status = project.Status;
             existing.StartDate = project.StartDate;
             existing.EndDate = project.EndDate;
-            //_repository.Update(existing);
-            try
-            {
-            await _repository.SaveChangesAsync();
 
-            } catch(DbUpdateConcurrencyException)
-            {
-                throw new Exception("409");
-            }
+            existing.Version = project.Version;
+            await _repository.SaveChangesAsync();
         }
         else
         {
@@ -126,91 +124,91 @@ public class ProjectService : IProjectService
         }
     }
 
-    public async Task<IEnumerable<Project>> SearchProject(string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
-    {
-        List<Project> listProject1 = (List<Project>)await _repository.GetAll();
-        var listProject = listProject1.AsQueryable();
-        IQueryable<Project> result;
-        // Search
-        if (string.IsNullOrEmpty(searchText) && searchStatus.Equals("0"))
-        {
-            result = listProject;
-        }
-        else if (string.IsNullOrEmpty(searchText))
-        {
-            result = listProject.Where(p => p.Status == searchStatus);
-        }
-        else if (searchStatus.Equals("0"))
-        {
-            result = listProject.Where(p => p.Name.Contains(searchText) || p.Customer.Contains(searchText) || p.ProjectNumber.ToString().Contains(searchText));
-        }
-        else
-        {
-            result = listProject.Where(p => (p.Name.Contains(searchText) || p.Customer.Contains(searchText) || p.ProjectNumber.ToString().Contains(searchText)) && p.Status == searchStatus);
-        }
+    //public async Task<IEnumerable<Project>> SearchProject(string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
+    //{
+    //    List<Project> listProject1 = (List<Project>)await _repository.GetAll();
+    //    var listProject = listProject1.AsQueryable();
+    //    IQueryable<Project> result;
+    //    // Search
+    //    if (string.IsNullOrEmpty(searchText) && searchStatus.Equals("0"))
+    //    {
+    //        result = listProject;
+    //    }
+    //    else if (string.IsNullOrEmpty(searchText))
+    //    {
+    //        result = listProject.Where(p => p.Status == searchStatus);
+    //    }
+    //    else if (searchStatus.Equals("0"))
+    //    {
+    //        result = listProject.Where(p => p.Name.Contains(searchText) || p.Customer.Contains(searchText) || p.ProjectNumber.ToString().Contains(searchText));
+    //    }
+    //    else
+    //    {
+    //        result = listProject.Where(p => (p.Name.Contains(searchText) || p.Customer.Contains(searchText) || p.ProjectNumber.ToString().Contains(searchText)) && p.Status == searchStatus);
+    //    }
 
-        // Sort
-        if (sortNumber != "0")
-        {
-            if (sortNumber == ASC)
-            {
-                return result.OrderBy(p => p.ProjectNumber);
-            }
-            else
-            {
-                return result.OrderBy(p => p.ProjectNumber).Reverse();
-            }
+    //    // Sort
+    //    if (sortNumber != "0")
+    //    {
+    //        if (sortNumber == ASC)
+    //        {
+    //            return result.OrderBy(p => p.ProjectNumber);
+    //        }
+    //        else
+    //        {
+    //            return result.OrderBy(p => p.ProjectNumber).Reverse();
+    //        }
 
-        }
-        else if (sortName != "0")
-        {
-            if (sortName == ASC)
-            {
-                return result.OrderBy(p => p.Name);
-            }
-            else
-            {
-                return result.OrderBy(p => p.Name).Reverse();
-            }
-        }
-        else if (sortStatus != "0")
-        {
-            if (sortStatus == ASC)
-            {
-                return result.OrderBy(p => p.Status);
-            }
-            else
-            {
-                return result.OrderBy(p => p.Status).Reverse();
-            }
-        }
-        else if (sortCustomer != "0")
-        {
-            if (sortCustomer == ASC)
-            {
-                return result.OrderBy(p => p.Customer);
-            }
-            else
-            {
-                return result.OrderBy(p => p.Customer).Reverse();
-            }
-        }
-        else if (sortStartDate != "0")
-        {
-            if (sortStartDate == ASC)
-            {
-                return result.OrderBy(p => p.StartDate);
-            }
-            else
-            {
-                return result.OrderBy(p => p.StartDate).Reverse();
-            }
-        }
-        else
-        {
-            return result;
-        }
-    }
+    //    }
+    //    else if (sortName != "0")
+    //    {
+    //        if (sortName == ASC)
+    //        {
+    //            return result.OrderBy(p => p.Name);
+    //        }
+    //        else
+    //        {
+    //            return result.OrderBy(p => p.Name).Reverse();
+    //        }
+    //    }
+    //    else if (sortStatus != "0")
+    //    {
+    //        if (sortStatus == ASC)
+    //        {
+    //            return result.OrderBy(p => p.Status);
+    //        }
+    //        else
+    //        {
+    //            return result.OrderBy(p => p.Status).Reverse();
+    //        }
+    //    }
+    //    else if (sortCustomer != "0")
+    //    {
+    //        if (sortCustomer == ASC)
+    //        {
+    //            return result.OrderBy(p => p.Customer);
+    //        }
+    //        else
+    //        {
+    //            return result.OrderBy(p => p.Customer).Reverse();
+    //        }
+    //    }
+    //    else if (sortStartDate != "0")
+    //    {
+    //        if (sortStartDate == ASC)
+    //        {
+    //            return result.OrderBy(p => p.StartDate);
+    //        }
+    //        else
+    //        {
+    //            return result.OrderBy(p => p.StartDate).Reverse();
+    //        }
+    //    }
+    //    else
+    //    {
+    //        return result;
+    //    }
+    //}
     public PagingDto SearchProjectV2(int pageSize, int pageIndex, string? searchText, string searchStatus, string sortNumber, string sortName, string sortStatus, string sortCustomer, string sortStartDate)
     {
         PagingDto result = new PagingDto();
@@ -332,15 +330,15 @@ public class ProjectService : IProjectService
         }
         return result;
     }
-    public int TotalRecord()
-    {
-        return _repository.Get().Count();
-    }
-    public IEnumerable<Project> PagingProject(int pageSize, int pageIndex, IEnumerable<Project> list)
-    {
-        int skip = (pageIndex - 1) * pageSize;
-        return list.Skip(skip).Take(pageSize);
-    }
+    //public int TotalRecord()
+    //{
+    //    return _repository.Get().Count();
+    //}
+    //public IEnumerable<Project> PagingProject(int pageSize, int pageIndex, IEnumerable<Project> list)
+    //{
+    //    int skip = (pageIndex - 1) * pageSize;
+    //    return list.Skip(skip).Take(pageSize);
+    //}
 
     public async Task<bool> CheckExist(int projectNumber)
     {
@@ -375,39 +373,39 @@ public class ProjectService : IProjectService
         Project? project = _repository.Get().Include(x => x.Employees).SingleOrDefault(x => x.Id == projectId);
         return project;
     }
-    public async Task Add1000()
-    {
-        string[] status = { "NEW", "INP", "FIN", "PLA" };
-        int sizeName, sizeCustomer, indexStatus, groupid, randomDay;
-        string name, customer;
-        Random random = new Random();
-        for (int i = 100; i < 1000000; i++)
-        {
-            randomDay = random.Next(0, 200);
-            sizeName = random.Next(5, 50);
-            sizeCustomer = random.Next(5, 50);
-            indexStatus = random.Next(0, 4);
-            groupid = random.Next(1, 11);
-            name = RandomString(sizeName);
-            customer = RandomString(sizeCustomer);
-            var project = new Project
-            {
-                ProjectNumber = i,
-                Name = name,
-                Customer = customer,
-                Status = status[indexStatus],
-                GroupId = groupid,
-                StartDate = DateTime.Now.AddDays(randomDay)
-            };
-            await _repository.AddAsync(project);
-        }
-        await _repository.SaveChangesAsync();
-    }
-    public static string RandomString(int length)
-    {
-        Random random = new Random();
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-    }
+    //public async Task Add1000()
+    //{
+    //    string[] status = { "NEW", "INP", "FIN", "PLA" };
+    //    int sizeName, sizeCustomer, indexStatus, groupid, randomDay;
+    //    string name, customer;
+    //    Random random = new Random();
+    //    for (int i = 100; i < 1000000; i++)
+    //    {
+    //        randomDay = random.Next(0, 200);
+    //        sizeName = random.Next(5, 50);
+    //        sizeCustomer = random.Next(5, 50);
+    //        indexStatus = random.Next(0, 4);
+    //        groupid = random.Next(1, 11);
+    //        name = RandomString(sizeName);
+    //        customer = RandomString(sizeCustomer);
+    //        var project = new Project
+    //        {
+    //            ProjectNumber = i,
+    //            Name = name,
+    //            Customer = customer,
+    //            Status = status[indexStatus],
+    //            GroupId = groupid,
+    //            StartDate = DateTime.Now.AddDays(randomDay)
+    //        };
+    //        await _repository.AddAsync(project);
+    //    }
+    //    await _repository.SaveChangesAsync();
+    //}
+    //public static string RandomString(int length)
+    //{
+    //    Random random = new Random();
+    //    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    //    return new string(Enumerable.Repeat(chars, length)
+    //        .Select(s => s[random.Next(s.Length)]).ToArray());
+    //}
 }
